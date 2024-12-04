@@ -41,6 +41,33 @@ public final class PreparedStatementLogger extends BaseJdbcLogger implements Inv
     this.statement = stmt;
   }
 
+  /**
+   * 记录PreparedStatement的各种操作
+   * 功能：
+   *    1、基础方法调用：如果调用的是 Object 类的方法，则直接调用并返回结果。
+   *    2、执行方法处理：
+   *        如果是执行方法（如 executeQuery、executeUpdate 等），
+   *        先检查是否开启了调试模式，如果是则记录参数信息。
+   *        清除列信息。
+   *        如果是 executeQuery 方法，调用 statement 的 executeQuery
+   *        方法并返回新的 ResultSetLogger 实例。
+   *        其他执行方法直接调用 statement 的对应方法并返回结果。
+   *    3、设置方法处理：
+   *        如果是设置方法（如 setNull、setInt 等），
+   *        记录列信息并调用 statement 的对应方法。
+   *    4、获取结果集：
+   *        如果是 getResultSet 方法，
+   *        调用 statement 的 getResultSet
+   *        方法并返回新的 ResultSetLogger 实例。
+   *     5、取更新计数：
+   *        如果是 getUpdateCount 方法，
+   *        调用 statement 的 getUpdateCount 方法，
+   *        记录更新计数并返回结果。
+   *     6、其他方法：
+   *        直接调用 statement 的对应方法并返回结果。
+   *     7、异常处理：
+   *        捕获所有异常并使用 ExceptionUtil.unwrapThrowable 解包异常。
+   */
   @Override
   public Object invoke(Object proxy, Method method, Object[] params) throws Throwable {
     try {

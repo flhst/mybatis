@@ -23,7 +23,7 @@ import java.lang.reflect.Constructor;
  */
 /**
  * 日志工厂
- * 
+ * LogFactory 工厂类负责创建对应的日志组件适配器。
  */
 public final class LogFactory {
 
@@ -34,6 +34,7 @@ public final class LogFactory {
   public static final String MARKER = "MYBATIS";
 
   //具体究竟用哪个日志框架，那个框架所对应logger的构造函数
+  //记录当前使用的第三方日志组件所对应的适配器的构造方法
   private static Constructor<? extends Log> logConstructor;
 
   static {
@@ -149,6 +150,7 @@ public final class LogFactory {
 
   private static void setImplementation(Class<? extends Log> implClass) {
     try {
+      // 获取指定日志实现类的构造函数，确保该构造函数接受一个 String 参数。
       Constructor<? extends Log> candidate = implClass.getConstructor(new Class[] { String.class });
       Log log = candidate.newInstance(new Object[] { LogFactory.class.getName() });
       log.debug("Logging initialized using '" + implClass + "' adapter.");

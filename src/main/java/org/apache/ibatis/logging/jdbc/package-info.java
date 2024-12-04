@@ -16,5 +16,8 @@
 
 /**
  * Logging proxies that logs any JDBC statement.
+ *
+ * 动态代理
+ * https://blog.csdn.net/chaoHappy/article/details/88676526
  */
 package org.apache.ibatis.logging.jdbc;

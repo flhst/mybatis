@@ -41,6 +41,25 @@ public final class ConnectionLogger extends BaseJdbcLogger implements Invocation
     this.connection = conn;
   }
 
+  /**
+   * 拦截并记录数据库连接的各种操作
+   * 功能：
+   *    1、基础方法调用：
+   *        如果调用的方法属于 Object 类，则直接调用该方法。
+   *    2、准备语句：
+   *        如果调用的是 prepareStatement 或 prepareCall 方法，
+   *        会先检查是否启用了调试日志，然后记录 SQL 语句，
+   *        再创建并返回一个新的 PreparedStatement 对象，
+   *        该对象被 PreparedStatementLogger 包装。
+   *    3、创建语句：
+   *        如果调用的是 createStatement 方法，
+   *        会创建并返回一个新的 Statement 对象，
+   *        该对象被 StatementLogger 包装。
+   *    4、其他方法：
+   *        对于其他方法，直接调用并返回结果。
+   *    5、异常处理：
+   *        捕获所有异常，并通过 ExceptionUtil.unwrapThrowable 解包异常，重新抛出。
+   */
   @Override
   public Object invoke(Object proxy, Method method, Object[] params)
       throws Throwable {
@@ -79,6 +98,9 @@ public final class ConnectionLogger extends BaseJdbcLogger implements Invocation
    *
    * @param conn - the original connection
    * @return - the connection with logging
+   *
+   * 创建一个带有日志记录功能的数据库连接对象
+   *
    */
   public static Connection newInstance(Connection conn, Log statementLog, int queryStack) {
     InvocationHandler handler = new ConnectionLogger(conn, statementLog, queryStack);

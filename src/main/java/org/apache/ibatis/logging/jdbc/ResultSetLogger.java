@@ -59,6 +59,16 @@ public final class ResultSetLogger extends BaseJdbcLogger implements InvocationH
     this.rs = rs;
   }
 
+  /**
+   * 1、代理方法调用：
+   *    如果调用的方法属于 Object 类，则直接调用并返回结果。
+   * 2、处理 next 方法：
+   *    如果调用的是 next 方法且返回 true，则记录一行数据。
+   *    如果 isTraceEnabled 返回 true，则打印列头和列值。
+   *    如果 next 方法返回 false，则记录总行数。
+   * 3、异常处理：
+   *    捕获并解包异常，重新抛出。
+   */
   @Override
   public Object invoke(Object proxy, Method method, Object[] params) throws Throwable {
     try {
@@ -89,6 +99,15 @@ public final class ResultSetLogger extends BaseJdbcLogger implements InvocationH
     }
   }
 
+  /**
+   * 在日志中打印结果集的列名
+   *    1、创建一个 StringBuilder 对象 row，并初始化字符串 " Columns: "。
+   *    2、遍历结果集元数据中的所有列：
+   *        检查当前列的数据类型是否为 BLOB 类型，如果是，则将其列索引添加到 blobColumns 集合中。
+   *        获取当前列的列名，并将其追加到 row 中。
+   *        如果当前列不是最后一列，则在列名后追加 ", "。
+   *    3、将构建好的列名字符串通过 trace 方法记录到日志中。
+   */
   private void printColumnHeaders(ResultSetMetaData rsmd, int columnCount) throws SQLException {
     StringBuilder row = new StringBuilder();
     row.append("   Columns: ");
@@ -105,6 +124,20 @@ public final class ResultSetLogger extends BaseJdbcLogger implements InvocationH
     trace(row.toString(), false);
   }
 
+  /**
+   * 打印结果集的每一行数据
+   *    1、初始化 StringBuilder 对象：
+   *        创建一个 StringBuilder 对象 row，并添加前缀 " Row: "。
+   *    2、遍历列：
+   *        使用 for 循环遍历每一列（从 1 到 columnCount）。
+   *    3、获取列名：
+   *        如果当前列在 blobColumns 集合中，则设置 colname 为 "<<BLOB>>"。
+   *        否则，尝试通过 rs.getString(i) 获取列值。如果发生 SQLException，则设置 colname 为 "<<Cannot Display>>"。
+   *    4、拼接列值：
+   *        将 colname 添加到 row 中，如果不是最后一列，则添加逗号和空格。
+   *    5、记录日志：
+   *        调用 trace 方法记录拼接好的行数据。
+   */
   private void printColumnValues(int columnCount) {
     StringBuilder row = new StringBuilder();
     row.append("       Row: ");
