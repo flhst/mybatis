@@ -22,8 +22,13 @@ import java.lang.reflect.Constructor;
  * @author Eduardo Macarron
  */
 /**
+ *
  * 日志工厂
- * LogFactory 工厂类负责创建对应的日志组件适配器。
+ * LogFactory 工厂类负责创建对应的日志组件适配器（适配器模式）。
+ *
+ * 单例模式，不允许外部实例化（private LogFactory()），并且在类加载时初始化一次
+ *
+ * public static Log getLog(Class<?> aClass) 用来创建新的Log实例，不是单例模式
  */
 public final class LogFactory {
 

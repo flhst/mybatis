@@ -45,13 +45,19 @@ import org.xml.sax.SAXParseException;
 /**
  * XPath解析器，用的都是JDK的类包,封装了一下，使得使用起来更方便
  *
+ * 进行解析XML文件的类，此类用于读取XML文件中的
  */
 public class XPathParser {
 
+  // 需要解析的XML文档
   private Document document;
+  // 是否验证
   private boolean validation;
+  // 实体解析类
   private EntityResolver entityResolver;
+  // 属性对象
   private Properties variables;
+  // 用来解析XML文档的XPath对象
   private XPath xpath;
 
 	//一些构造函数,全部调用commonConstructor以及createDocument
@@ -192,7 +198,11 @@ public class XPathParser {
     return evalFloat(document, expression);
   }
 
-	//??这里有点疑问，为何Float用evalString,Double用evaluate XPathConstants.NUMBER
+  //??这里有点疑问，为何Float用evalString,Double用evaluate XPathConstants.NUMBER
+  // XPathConstants.NUMBER默认是映射到java Double，所以Double可以直接使用evaluate XPathConstants.NUMBER
+  // 对于 Short, Integer, Long, 和 Float 类型，
+  // 虽然也可以直接使用 evaluate 方法并进行类型转换，
+  // 但这样做可能会引入额外的复杂性和潜在的精度损失。
   public Float evalFloat(Object root, String expression) {
     return Float.valueOf(evalString(root, expression));
   }

@@ -38,11 +38,16 @@ public class XNode {
   //org.w3c.dom.Node
   private Node node;
   //以下都是预先把信息都解析好，放到map等数据结构中（内存中）
+  // Node节点名称
   private String name;
+  // Node节点内容
   private String body;
+  // 节点属性集合
   private Properties attributes;
+  // 配置文件中<properties>节点下定义的键位对
   private Properties variables;
   //XPathParser方便xpath解析
+  // XPathParser对象，当前XNode对象由此XPathParser对象生成
   private XPathParser xpathParser;
 
   //在构造时就把一些信息（属性，body）全部解析好，以便我们直接通过getter函数取得
@@ -84,15 +89,27 @@ public class XNode {
     return builder.toString();
   }
 
-	//取得标示符   ("resultMap[authorResult]")
-	//XMLMapperBuilder.resultMapElement调用
-//	<resultMap id="authorResult" type="Author">
-//	  <id property="id" column="author_id"/>
-//	  <result property="username" column="author_username"/>
-//	  <result property="password" column="author_password"/>
-//	  <result property="email" column="author_email"/>
-//	  <result property="bio" column="author_bio"/>
-//	</resultMap>
+  // 用于生成一个基于节点属性的唯一标识符
+  // 具体逻辑是：
+  //    1、初始化 StringBuilder 对象 builder。
+  //    2、从当前节点开始，向上遍历所有父节点，直到根节点。
+  //    3、对于每个节点：
+  //        如果不是起始节点，插入下划线 _。
+  //        尝试获取节点的 id 属性，如果不存在则尝试获取 value 属性，如果还不存在则尝试获取 property 属性。
+  //        如果找到属性值，将其中的点 . 替换为下划线 _，并格式化为 [属性值] 插入到 builder 中。
+  //        插入当前节点的名称。
+  //    4、返回最终生成的字符串
+  //
+  //
+  // 取得标示符   ("resultMap[authorResult]")
+  // XMLMapperBuilder.resultMapElement调用
+  //	<resultMap id="authorResult" type="Author">
+  //	  <id property="id" column="author_id"/>
+  //	  <result property="username" column="author_username"/>
+  //	  <result property="password" column="author_password"/>
+  //	  <result property="email" column="author_email"/>
+  //	  <result property="bio" column="author_bio"/>
+  //	</resultMap>
   public String getValueBasedIdentifier() {
     StringBuilder builder = new StringBuilder();
     XNode current = this;
