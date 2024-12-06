@@ -26,11 +26,15 @@ import org.apache.ibatis.cache.Cache;
  * 定时调度缓存
  * 目的是每一小时清空一下缓存
  *
+ * 自动刷新缓存装饰器：
+ *      当操作缓存对象时，如果当前时间与上次清空缓存的时间间隔大于指定的时间间隔，则清空缓存。
  */
 public class ScheduledCache implements Cache {
 
   private Cache delegate;
+  // 清除间隔
   protected long clearInterval;
+  // 上次清除时间
   protected long lastClear;
 
   public ScheduledCache(Cache delegate) {

@@ -16,5 +16,8 @@
 
 /**
  * Base package for caching stuff
+ *
+ * mybatis 二级缓存
+ * https://www.cnblogs.com/51life/p/9529409.html
  */
 package org.apache.ibatis.cache;

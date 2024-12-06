@@ -25,6 +25,9 @@ import org.apache.ibatis.cache.Cache;
  * Lru (first in, first out) cache decorator
  *
  * @author Clinton Begin
+ *
+ * 最近最少使用缓存装饰器：
+ *      LRU算法淘汰最近最少使用的Key和Value。
  */
 /*
  * 最近最少使用缓存
@@ -33,7 +36,7 @@ import org.apache.ibatis.cache.Cache;
 public class LruCache implements Cache {
 
   private final Cache delegate;
-  //额外用了一个map才做lru，但是委托的Cache里面其实也是一个map，这样等于用2倍的内存实现lru功能
+  //额外用了一个map做lru，但是委托的Cache里面其实也是一个map，这样等于用2倍的内存实现lru功能
   private Map<Object, Object> keyMap;
   private Object eldestKey;
 
@@ -81,7 +84,7 @@ public class LruCache implements Cache {
 
   @Override
   public Object getObject(Object key) {
-      //get的时候调用一下LinkedHashMap.get，让经常访问的值移动到链表末尾
+    //get的时候调用一下LinkedHashMap.get，让经常访问的值移动到链表末尾
     keyMap.get(key); //touch
     return delegate.getObject(key);
   }

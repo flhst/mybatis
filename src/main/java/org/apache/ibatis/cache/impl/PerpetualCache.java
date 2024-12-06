@@ -29,6 +29,7 @@ import org.apache.ibatis.cache.CacheException;
  * 永久缓存
  * 一旦存入就一直保持
  *
+ * 内部维护了一个HashMap来实现缓存
  */
 public class PerpetualCache implements Cache {
 

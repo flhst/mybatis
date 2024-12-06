@@ -36,6 +36,8 @@ import org.apache.ibatis.io.Resources;
  * 序列化缓存
  * 用途是先将对象序列化成2进制，再缓存,好处是将对象压缩了，省内存
  * 坏处是速度慢了
+ *
+ * 序列化缓存装饰器：向缓存中添加对象时，对添加的对象进行序列化处理，从缓存中取出对象时，进行反序列化处理。
  * 
  */
 public class SerializedCache implements Cache {

@@ -29,11 +29,18 @@ import org.apache.ibatis.cache.Cache;
 /*
  * FIFO缓存
  * 这个类就是维护一个FIFO链表，其他都委托给所包装的cache去做。典型的装饰模式
+ *
+ * 双端队列，尾进头出
+ * 增加记录时判断如果记录已超过1024条，会移除链表的第一个元素，从而达到FIFO缓存效果
+ *
+ * 先入先出缓存装饰器：
+ *      LinkedList实例：固定长度的Key键值链表，维护Key的FIFO顺序
  */
 public class FifoCache implements Cache {
 
   private final Cache delegate;
   private Deque<Object> keyList;
+  // 双端队列长度
   private int size;
 
   public FifoCache(Cache delegate) {
@@ -84,7 +91,7 @@ public class FifoCache implements Cache {
   }
 
   private void cycleKeyList(Object key) {
-      //增加记录时判断如果记录已超过1024条，会移除链表的第一个元素，从而达到FIFO缓存效果
+    //增加记录时判断如果记录已超过1024条，会移除链表的第一个元素，从而达到FIFO缓存效果
     keyList.addLast(key);
     if (keyList.size() > size) {
       Object oldestKey = keyList.removeFirst();

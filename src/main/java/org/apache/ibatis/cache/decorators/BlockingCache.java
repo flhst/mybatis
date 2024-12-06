@@ -33,6 +33,14 @@ import org.apache.ibatis.cache.CacheException;
  * 
  * @author Eduardo Macarron
  *
+ *
+ * 简单的阻塞装饰器 Sipmle 和 EhCache 的 BlockingCache 装饰器的低效版本。
+ *
+ * 当在缓存中找不到该元素时，它会对该缓存键设置锁定。
+ * 这样，其他线程将等待该元素被填充，而不是访问数据库。
+ *
+ * 阻塞功能缓存装饰器：
+ *      保证同一时间只有一个线程到缓存中查找指定key对应的数据
  */
 public class BlockingCache implements Cache {
 
@@ -70,7 +78,7 @@ public class BlockingCache implements Cache {
     Object value = delegate.getObject(key);
     if (value != null) {
       releaseLock(key);
-    }        
+    }
     return value;
   }
 
@@ -97,6 +105,10 @@ public class BlockingCache implements Cache {
   
   private void acquireLock(Object key) {
     Lock lock = getLockForKey(key);
+    // 检查timeout是否大于0，如果大于0，则使用tryLock方法尝试在指定时间内获取锁，
+    // 如果在超时时间内没有获取到锁，抛出CacheException
+    // 如果获取过程中被中断，抛出CacheException
+    // 如果timeout不大于0，则使用lock方法直接获取锁
     if (timeout > 0) {
       try {
         boolean acquired = lock.tryLock(timeout, TimeUnit.MILLISECONDS);

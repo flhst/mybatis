@@ -26,7 +26,10 @@ import org.apache.ibatis.logging.LogFactory;
  */
 /**
  * 日志缓存
- * 添加功能：取缓存时打印命中率
+ * 添加功能：命中率
+ *
+ * 为缓存增加日志输出功能：
+ *      记录缓存的请求次数和命中次数，通过日志输出缓存命中率。
  *
  */
 public class LoggingCache implements Cache {
@@ -34,7 +37,9 @@ public class LoggingCache implements Cache {
   //用的mybatis自己的抽象Log
   private Log log;  
   private Cache delegate;
+  // 请求次数
   protected int requests = 0;
+  // 命中次数
   protected int hits = 0;
 
   public LoggingCache(Cache delegate) {

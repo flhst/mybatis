@@ -32,6 +32,7 @@ import org.apache.ibatis.cache.Cache;
  *  3.2.6以后这个类已经没用了，考虑到Hazelcast, EhCache已经有锁机制了，所以这个锁就画蛇添足了。
  * bug见https://github.com/mybatis/mybatis-3/issues/159
  *
+ * 线程安全缓存装饰器：用synchronized修饰
  */
 public class SynchronizedCache implements Cache {
 

@@ -24,6 +24,16 @@ import java.util.List;
  * @author Clinton Begin
  */
 /**
+ * PerpetualCache的Map<Object, Object>第一个是CacheKey
+ *
+ * 因为MyBatis中涉及到动态SQL的原因，缓存项的key不能仅仅通过一个String来表示，
+ * 所以通过CacheKey来封装缓存的key值
+ * CacheKey可以封装多个影响缓存项的因素
+ *  1、 mappedStementId
+ *  2、指定查询结果集的范围（分页信息）
+ *  3、查询所使用的SQL语句
+ *  4、用户传递给SQL语句的实际参数值
+ *
  * 缓存key
  * 一般缓存框架的数据结构基本上都是 Key-Value 方式存储，
  * MyBatis 对于其 Key 的生成采取规则为：[mappedStementId + offset + limit + SQL + queryParams + environment]生成一个哈希码
@@ -34,12 +44,18 @@ public class CacheKey implements Cloneable, Serializable {
 
   public static final CacheKey NULL_CACHE_KEY = new NullCacheKey();
 
+  // 参与hash计算的乘数的默认值
   private static final int DEFAULT_MULTIPLYER = 37;
+  // hashcode默认值
   private static final int DEFAULT_HASHCODE = 17;
 
+  // 参与hash计算的乘数
   private int multiplier;
+  // CacheKey的hashcode，在update函数中实时运算出来的
   private int hashcode;
+  // 校验和，hash值的和
   private long checksum;
+  //updateList的中元素个数
   private int count;
   private List<Object> updateList;
 
